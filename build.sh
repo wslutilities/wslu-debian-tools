@@ -77,14 +77,14 @@ case $1 in
     latest)
         tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/latest)"
         tmp_version="$(echo "$tmp_info" | grep -oP '"tag_name": "v\K(.*)(?=")')"
-        CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "v\K(.*)(?=")')"
+        CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
         CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
         curl "https://github.com/wslutilities/wslu/archive/refs/tags/v${tmp_version}.tar.gz" -o "wslu-${tmp_version}.tar.gz"
         VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${tmp_version}/VERSION)"
         ;;
     *)
         tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/tags/v${1})"
-        CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "v\K(.*)(?=")')"
+        CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
         CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
         curl "https://github.com/wslutilities/wslu/archive/refs/tags/v${1}.tar.gz" -o "wslu-${1}.tar.gz"
         VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${1}/VERSION)"
