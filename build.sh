@@ -94,7 +94,7 @@ esac
 chmod +x ./debian/rules
 sed -i s/DISTROPLACEHOLDER/"$CODENAME"/g ./debian/changelog
 sed -i s/VERSIONPLACEHOLDER/"$VERSION"/g ./debian/changelog
-sed -i s/POSTVERSIONPLACEHOLDER/"$POSTFIX"/g ./debian/changelog
+sed -i s/POSTFIXPLACEHOLDER/"$POSTFIX"/g ./debian/changelog
 sed -i s/DATETIMEPLACEHOLDER/"$(date +'%a, %d %b %Y %T %z')"/g ./debian/changelog
 sed -i s/ARCHPLACEHOLDER/"$ARCHITECTURE"/g ./debian/control
 
