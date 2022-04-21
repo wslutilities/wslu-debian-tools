@@ -33,7 +33,7 @@ DISTRO="${2}"
 
 case "$2" in
   ubuntu)
-    [ "$3" != "bionic" || "$3" != "focal" || "$3" != "impish" || "$3" != "jammy" ] || exit 1
+    [[ "$3" == "bionic" || "$3" == "focal" || "$3" == "impish" || "$3" == "jammy" ]] || exit 1
     CODENAME="$3"
     ARCHITECTURE="amd64 arm64"
     case CODENAME in
@@ -49,12 +49,12 @@ case "$2" in
     esac
     ;;
   debian)
-    [ "$3" != "buster" || "$3" != "bullseye" ] || exit 1
+    [[ "$3" == "buster" || "$3" == "bullseye" ]] || exit 1
     CODENAME="$3"
     ARCHITECTURE="all"
     ;;
   kali)
-    [ "$3" != "kali-rolling" || "$3" != "kali-dev" ] || exit 1
+    [[ "$3" == "kali-rolling" || "$3" == "kali-dev" ]] || exit 1
     CODENAME="$3"
     ARCHITECTURE="amd64"
     ;;
