@@ -1,0 +1,27 @@
+Source: wslu
+Section: admin
+Priority: optional
+Maintainer: Patrick Wu <me@patrickwu.space>
+Build-Depends: bats,
+               debhelper (>= 10)
+Standards-Version: 4.3.0.3
+Homepage: https://wslutiliti.es/wslu
+Vcs-Browser: https://github.com/wslutilities/wslu
+Vcs-Git: https://github.com/wslutilities/wslu.git
+
+Package: wslu
+Architecture: ARCHPLACEHOLDER
+Depends: ${misc:Depends},
+         desktop-file-utils,
+         bc,
+         psmisc
+Recommends: pulseaudio-utils,
+            x11-utils
+Suggests: imagemagick
+Provides: www-browser
+Description: collection of utilities for the Linux Subsystem for Windows
+ This is a collection of utilities for the Linux Subsystem for Windows 
+ (WSL), such as for converting Linux paths to a Windows paths or creating 
+ Linux application shortcuts on the Windows Desktop.
+ .
+ Requires Windows 10 Creators Update and higher.
