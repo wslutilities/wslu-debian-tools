@@ -92,7 +92,7 @@ case $1 in
 esac
 
 
-OIFS=$IFS; IFS=$'|'; cl_arr=($y); IFS=$OIFS;
+OIFS=$IFS; IFS=$'|'; cl_arr=($CHANGELOG); IFS=$OIFS;
 for q in "${cl_arr[@]}"; do
     tmp="$(echo "$q" | sed -e 's/|$//g' -e 's/^  - //g')"
     dch -a "$tmp"
