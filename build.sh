@@ -91,6 +91,12 @@ case $1 in
         ;;
 esac
 
+chmod +x ./debian/rules
+sed -i s/DISTROPLACEHOLDER/"$CODENAME"/g ./debian/changelog
+sed -i s/VERSIONPLACEHOLDER/"$VERSION"/g ./debian/changelog
+sed -i s/POSTVERSIONPLACEHOLDER/"$POSTFIX"/g ./debian/changelog
+sed -i s/DATETIMEPLACEHOLDER/"$(date +'%a, %d %b %Y %T %z')"/g ./debian/changelog
+sed -i s/ARCHPLACEHOLDER/"$ARCHITECTURE"/g ./debian/control
 
 OIFS=$IFS; IFS=$'|'; cl_arr=($CHANGELOG); IFS=$OIFS;
 for q in "${cl_arr[@]}"; do
@@ -98,13 +104,6 @@ for q in "${cl_arr[@]}"; do
     dch -a "$tmp"
     unset tmp
 done
-
-chmod +x ./debian/rules
-sed -i s/DISTROPLACEHOLDER/"$CODENAME"/g ./debian/changelog
-sed -i s/VERSIONPLACEHOLDER/"$VERSION"/g ./debian/changelog
-sed -i s/POSTVERSIONPLACEHOLDER/"$POSTFIX"/g ./debian/changelog
-sed -i s/DATETIMEPLACEHOLDER/"$(date +'%a, %d %b %Y %T %z')"/g ./debian/changelog
-sed -i s/ARCHPLACEHOLDER/"$ARCHITECTURE"/g ./debian/control
 
 # case $DISTRO in
 #     debian|pengwin)
