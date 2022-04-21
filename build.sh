@@ -101,7 +101,7 @@ sed -i s/ARCHPLACEHOLDER/"$ARCHITECTURE"/g ./debian/control
 OIFS=$IFS; IFS=$'|'; cl_arr=($CHANGELOG); IFS=$OIFS;
 for q in "${cl_arr[@]}"; do
     tmp="$(echo "$q" | sed -e 's/|$//g' -e 's/^  - //g')"
-    dch -a "$tmp"
+    dch --no-auto-nmu -a "$tmp"
     unset tmp
 done
 
