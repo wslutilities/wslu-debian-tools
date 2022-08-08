@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2206,SC2001
 # pre-configure.sh
 # cdebian pre-configure script for wslu
 # <https://github.com/wslutilities/wslu>
@@ -31,22 +32,28 @@
 POSTFIX="${2}1"
 DISTRO="${2}"
 
-case "$2" in
+cleanup() {
+  rm -rvf ./wslu*
+  rm -rvf ./*.tar.gz
+  rm -rvf ./debian
+}
+
+trap cleanup EXIT
+
+case "$DISTRO" in
   ubuntu)
-    [[ "$3" == "bionic" || "$3" == "focal" || "$3" == "impish" || "$3" == "jammy" ]] || exit 1
     CODENAME="$3"
+    declare -A uvd 
+    OIFS=$IFS
+    IFS=','
+    while read -r value key
+    do
+        uvd+=( ["$value"]="$key" )
+    done < "./ubuntu_version_definition"
+     [ -v 'uvd[$CODENAME]' ] || exit 1
+    IFS=$OIFS
     ARCHITECTURE="amd64 arm64"
-    case CODENAME in
-      bionic)
-        POSTFIX="$POSTFIX~18.04"
-        ;;
-      focal)
-        POSTFIX="$POSTFIX~20.04"
-        ;;
-      impish)
-        POSTFIX="$POSTFIX~20.10"
-        ;;
-    esac
+    POSTFIX="$POSTFIX${uvd[$CODENAME]}"
     ;;
   debian)
     [[ "$3" == "buster" || "$3" == "bullseye" ]] || exit 1
@@ -90,7 +97,7 @@ case $1 in
         VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${1}/VERSION)"
         ;;
 esac
-
+cp -r ./debian-template/ ./debian
 chmod +x ./debian/rules
 sed -i s/DISTROPLACEHOLDER/"$CODENAME"/g ./debian/changelog
 sed -i s/VERSIONPLACEHOLDER/"$VERSION"/g ./debian/changelog
@@ -105,12 +112,14 @@ for q in "${cl_arr[@]}"; do
     unset tmp
 done
 
-# case $DISTRO in
-#     debian|pengwin)
-#         tar xvf wslu-*.tar.gz
-#         debuild -i -us -uc -b
-#         ;;
-#     *);;
-# esac
+case $DISTRO in
+    debian|pengwin)
+        tar xvf wslu-*.tar.gz
+        cd wslu* || exit
+        mv ../debian .
+        debuild -i -us -uc -b
+        ;;
+    *);;
+esac
 
 
