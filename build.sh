@@ -133,7 +133,7 @@ case $DISTRO in
             cd wslu* || exit
             mv ../debian .
         fi
-        debuild -i -us -uc -b
+        debuild -i -us -uc -b --lintian-opts --suppress-tags bad-distribution-in-changes-file
         ;;
     *);;
 esac
