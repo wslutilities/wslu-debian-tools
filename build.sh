@@ -62,7 +62,7 @@ case "$DISTRO" in
     POSTFIX="$POSTFIX${uvd[$CODENAME]}"
     ;;
   debian)
-    [[ "$3" == "buster" || "$3" == "bullseye" ]] || exit 1
+    [[ "$3" == "buster" || "$3" == "bullseye" || "$3" == "stable" || "$3" == "unstable" ]] || exit 1
     CODENAME="$3"
     ARCHITECTURE="all"
     ;;
