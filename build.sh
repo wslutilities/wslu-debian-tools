@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This script should be run with "./build.sh <version> <distribution> <codename> <changelog>"
+# This script should be run with "./build.sh [--ci] <version> <distribution> <codename> <changelog>"
 # Available distributions:
 #   - Ubuntu: ubuntu (amd64 arm64)
 #   - Debian: debian (all) - buster, bullseye
@@ -28,6 +28,12 @@
 #   - latest
 #   - <version>
 #   - dev
+CI="false"
+
+if [ "${1}" = "--ci" ]; then
+    CI="true"
+    shift
+fi
 
 POSTFIX="${2}1"
 DISTRO="${2}"
@@ -74,29 +80,34 @@ case "$DISTRO" in
     ;;
 esac
 
-case $1 in
-    dev)
-        VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/dev/master/VERSION | sed 's/-/.d$(date +'%s')-/g')"
-        tmp_version="$(echo "$VERSION" | sed 's/-.*$//g')"
-        curl "https://github.com/wslutilities/wslu/archive/dev/master.tar.gz" -o "wslu-${tmp_version}.tar.gz"
-        CHANGELOG="This is a dev build; Please check the dev/master branch to see the latest changes"
-        ;;
-    latest)
-        tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/latest)"
-        tmp_version="$(echo "$tmp_info" | grep -oP '"tag_name": "v\K(.*)(?=")')"
-        CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
-        CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
-        curl "https://github.com/wslutilities/wslu/archive/refs/tags/v${tmp_version}.tar.gz" -o "wslu-${tmp_version}.tar.gz"
-        VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${tmp_version}/VERSION)"
-        ;;
-    *)
-        tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/tags/v${1})"
-        CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
-        CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
-        curl "https://github.com/wslutilities/wslu/archive/refs/tags/v${1}.tar.gz" -o "wslu-${1}.tar.gz"
-        VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${1}/VERSION)"
-        ;;
-esac
+if [[ "${CI}" == "true" ]]; then
+    VERSION="$(sed s/-/.d$(date +%s)-/g ../VERSION)"
+    CHANGELOG="This is a dev build in CI; Please check the dev/master branch to see the latest changes"
+else
+    case $1 in
+        dev)
+            VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/dev/master/VERSION | sed s/-/.d$(date +%s)-/g)"
+            tmp_version="$(echo "$VERSION" | sed s/-.*$//g)"
+            curl "https://github.com/wslutilities/wslu/archive/dev/master.tar.gz" -o "wslu-${tmp_version}.tar.gz"
+            CHANGELOG="This is a dev build; Please check the dev/master branch to see the latest changes"
+            ;;
+        latest)
+            tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/latest)"
+            tmp_version="$(echo "$tmp_info" | grep -oP '"tag_name": "v\K(.*)(?=")')"
+            CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
+            CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
+            curl "https://github.com/wslutilities/wslu/archive/refs/tags/v${tmp_version}.tar.gz" -o "wslu-${tmp_version}.tar.gz"
+            VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${tmp_version}/VERSION)"
+            ;;
+        *)
+            tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/tags/v${1})"
+            CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
+            CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
+            curl "https://github.com/wslutilities/wslu/archive/refs/tags/v${1}.tar.gz" -o "wslu-${1}.tar.gz"
+            VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${1}/VERSION)"
+            ;;
+    esac
+fi
 cp -r ./debian-template/ ./debian
 chmod +x ./debian/rules
 sed -i s/DISTROPLACEHOLDER/"$CODENAME"/g ./debian/changelog
@@ -114,9 +125,14 @@ done
 
 case $DISTRO in
     debian|pengwin)
-        tar xvf wslu-*.tar.gz
-        cd wslu* || exit
-        mv ../debian .
+        if [ "$CI" = "true" ]; then
+            cd ../
+            mv ./builder/debian ./debian
+        else
+            tar xvf wslu-*.tar.gz
+            cd wslu* || exit
+            mv ../debian .
+        fi
         debuild -i -us -uc -b
         ;;
     *);;
