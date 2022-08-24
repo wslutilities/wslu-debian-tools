@@ -124,7 +124,7 @@ for q in "${cl_arr[@]}"; do
 done
 
 case $DISTRO in
-    debian|pengwin)
+    debian|pengwin|kali)
         if [ "$CI" = "true" ]; then
             cd ../
             mv ./builder/debian ./debian
@@ -134,6 +134,12 @@ case $DISTRO in
             mv ../debian .
         fi
         debuild -i -us -uc -b --lintian-opts --suppress-tags bad-distribution-in-changes-file
+        ;;
+    ubuntu)
+        tar xvf wslu-*.tar.gz
+        cd wslu* || exit
+        mv ../debian .
+        GPG_TTY=$(tty) debuild -S -sa
         ;;
     *);;
 esac
