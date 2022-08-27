@@ -1,5 +1,5 @@
 #!/bin/bash
-#shellcheck disable=SC2206,SC2001
+#shellcheck disable=SC2206,SC2001,SC2046
 # pre-configure.sh
 # cdebian pre-configure script for wslu
 # <https://github.com/wslutilities/wslu>
@@ -129,12 +129,14 @@ case $DISTRO in
             cd ../
             mv ./builder/debian ./debian
         else
-            tar xvf wslu-*.tar.gz
+            tar xvzf wslu-*.tar.gz
             cd wslu* || exit
             mv ../debian .
         fi
+        # not all distribution definitions exist in one distro
         debuild -i -us -uc -b --lintian-opts --suppress-tags bad-distribution-in-changes-file
         ;;
+    # ubuntu do not have ci mainly due to password protected keys used in the build process
     ubuntu)
         tar xvf wslu-*.tar.gz
         cd wslu* || exit
