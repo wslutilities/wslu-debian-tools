@@ -97,7 +97,7 @@ else
             CHANGELOG="$(echo "$tmp_info" | grep -oP '"body": "\K(.*)(?=")')"
             CHANGELOG="$(echo -e "$CHANGELOG" | sed -e "s/\r//g" -e "s/^\s*##.*$//g" -e "/^$/d" -e "s/^-/  -/g" -e "s/$/|/g")"
             wget "https://github.com/wslutilities/wslu/archive/refs/tags/v${tmp_version}.tar.gz" -O "wslu-${tmp_version}.tar.gz"
-            VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v${tmp_version}/VERSION)"
+            VERSION="$(curl -s https://raw.githubusercontent.com/wslutilities/wslu/v"${tmp_version}"/VERSION)"
             ;;
         *)
             tmp_info="$(curl -s https://api.github.com/repos/wslutilities/wslu/releases/tags/v${1})"
@@ -136,6 +136,11 @@ case $DISTRO in
         fi
         # not all distribution definitions exist in one distro
         debuild -i -us -uc -b --lintian-opts --suppress-tags bad-distribution-in-changes-file
+        if [ "$CI" != "true" ]; then
+            cd ../
+            mkdir -p ./pkgs
+            mv ./wsl*.* ./pkgs/
+        fi
         ;;
     # ubuntu do not have ci mainly due to password protected keys used in the build process
     ubuntu)
