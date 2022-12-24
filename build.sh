@@ -48,6 +48,7 @@ trap cleanup EXIT
 
 case "$DISTRO" in
   ubuntu)
+    curl -s https://api.wedotstud.io/ubuntu/release/wslu.csv > ubuntu_version_definition
     CODENAME="$3"
     declare -A uvd 
     OIFS=$IFS
@@ -60,6 +61,7 @@ case "$DISTRO" in
     IFS=$OIFS
     ARCHITECTURE="amd64 arm64"
     POSTFIX="$POSTFIX${uvd[$CODENAME]}"
+    rm -f ./ubuntu_version_definition
     ;;
   debian)
     [[ "$3" == "buster" || "$3" == "bullseye" || "$3" == "stable" || "$3" == "unstable" ]] || exit 1
