@@ -112,6 +112,14 @@ else
 fi
 cp -r ./debian-template/ ./debian
 chmod +x ./debian/rules
+DEBFULLNAME="Patrick Wu"
+DEBEMAIL="patrick@wslutiliti.es"
+if [ "$DISTRO" = "ubuntu" ]; then
+    DEBFULLNAME="Jinming Wu, Patrick"
+    DEBEMAIL="me@patrickwu.space"
+fi
+sed -i s/DEBNAMEPLACHOLDER/"$DEBFULLNAME"/g ./debian/changelog
+sed -i s/DEBEMAILPLACEHOLDER/"$DEBEMAIL"/g ./debian/changelog
 sed -i s/DISTROPLACEHOLDER/"$CODENAME"/g ./debian/changelog
 sed -i s/VERSIONPLACEHOLDER/"$VERSION"/g ./debian/changelog
 sed -i s/POSTFIXPLACEHOLDER/"$POSTFIX"/g ./debian/changelog
