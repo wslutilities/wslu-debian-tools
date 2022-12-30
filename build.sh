@@ -39,7 +39,7 @@ POSTFIX="${2}1"
 DISTRO="${2}"
 
 cleanup() {
-  rm -rvf ./wslu*
+  rm -rvf ./wslu*/
   rm -rvf ./*.tar.gz
   rm -rvf ./debian
 }
@@ -121,7 +121,11 @@ sed -i s/ARCHPLACEHOLDER/"$ARCHITECTURE"/g ./debian/control
 OIFS=$IFS; IFS=$'|'; cl_arr=($CHANGELOG); IFS=$OIFS;
 for q in "${cl_arr[@]}"; do
     tmp="$(echo "$q" | sed -e 's/|$//g' -e 's/^  - //g')"
-    DEBFULLNAME="Patrick Wu" DEBEMAIL="patrick@wslutiliti.es" dch -a "$tmp"
+    if [ "$DISTRO" = "ubuntu" ]; then
+        DEBFULLNAME="Jinming Wu, Patrick" DEBEMAIL="me@patrickwu.space" dch -a "$tmp"
+    else
+        DEBFULLNAME="Patrick Wu" DEBEMAIL="patrick@wslutiliti.es" dch -a "$tmp"
+    fi
     unset tmp
 done
 
@@ -146,8 +150,9 @@ case $DISTRO in
         ;;
     # ubuntu do not have ci mainly due to password protected keys used in the build process
     ubuntu)
-        tar xvf wslu-*.tar.gz
-        cd wslu*
+        cp wslu-*.tar.gz "wslu_${VERSION/-*/}.orig.tar.gz"
+        tar xvzf wslu-*.tar.gz
+        cd "wslu-${VERSION/-*/}"
         mv ../debian .
         GPG_TTY=$(tty) debuild -S -sa
         ;;
