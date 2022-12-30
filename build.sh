@@ -40,7 +40,7 @@ DISTRO="${2}"
 
 cleanup() {
   rm -rvf ./wslu*/
-  rm -rvf ./*.tar.gz
+  rm -rvf ./wslu-*.tar.gz
   rm -rvf ./debian
 }
 
