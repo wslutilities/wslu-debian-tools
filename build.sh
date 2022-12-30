@@ -155,6 +155,7 @@ case $DISTRO in
         cd "wslu-${VERSION/-*/}"
         mv ../debian .
         GPG_TTY=$(tty) debuild -S -sa
+        cd ../
         ;;
     *);;
 esac
