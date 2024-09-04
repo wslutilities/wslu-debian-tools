@@ -10,5 +10,4 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] ; then
     date +"%s" | tee /usr/share/wslu/updated_time >/dev/null
 fi
 
-desktop-file-install --dir=/usr/share/applications /usr/share/wslu/wslview.desktop
 update-desktop-database
